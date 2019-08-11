@@ -14,5 +14,7 @@ namespace MyVet.Web.Data.Entities
         [MaxLength(20, ErrorMessage = "The field {0} cannot have more than {1} characters.")]
         [Required(ErrorMessage ="The field {0} is mandatory")]
         public string Name { get; set; }
+
+        public ICollection<Pet> Pets { get; set; }
     }
 }

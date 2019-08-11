@@ -1,4 +1,5 @@
 ﻿using MyVet.Web.Data.Entities;
+using MyVet.Web.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,24 +9,67 @@ namespace MyVet.Web.Data
 {
     public class SeedDb
     {
-        private readonly DataContext _context;
+        private readonly DataContext _dataContext;
+        private readonly IUserHelper _userHelper;
 
-        public SeedDb(DataContext context) { _context = context; }
+        public SeedDb(DataContext context, IUserHelper userHelper)
+        {
+            _dataContext = context;
+            _userHelper = userHelper;
+        }
 
         public async Task SeedAsync()
         {
-            await _context.Database.EnsureCreatedAsync();
+            await _dataContext.Database.EnsureCreatedAsync();
+            await CheckRoles();
+            var manager = await CheckUserAsync("1010", "Juan", "Ochoa", "jochoa.gaviria@hotmail.com", "311 743 7028", "Carrera 49", "Admin");
+            var customer = await CheckUserAsync("2020", "Nereida", "Gaviria", "juanda8a.1998@gmail.com", "350 577 6958", "Calle 70", "Customer");
             await CheckPetTypesAsync();
             await CheckServiceTypesAsync();
-            await CheckOwnersAsync();
+            await CheckOwnerAsync(customer);
+            await CheckManagerAsync(manager);
             await CheckPetsAsync();
             await CheckAgendasAsync();
 
         }
+        private async Task CheckRoles()
+        {
+            await _userHelper.CheckRoleAsync("Admin");
+            await _userHelper.CheckRoleAsync("Customer");
+        }
+        private async Task<User> CheckUserAsync(string document, 
+            string firstName, 
+            string lastName, 
+            string email, 
+            string phone, 
+            string address, 
+            string role){
+            var user = await _userHelper.GetUserByEmailAsync(email);
+            if (user == null)
+            {
+                user = new User
+                {
+                    FirstName = firstName,
+                    LastName = lastName,
+                    Email = email,
+                    UserName = email,
+                    PhoneNumber = phone,
+                    Address = address,
+                    Document = document
+                };
+
+                await _userHelper.AddUserAsync(user, "123456");
+                await _userHelper.AddUserToRoleAsync(user, role);
+            }
+
+            return user;
+        }
+
+
 
         private async Task CheckAgendasAsync()
         {
-            if (!_context.Agendas.Any())
+            if (!_dataContext.Agendas.Any())
             {
                 var initialDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 8, 0, 0);
                 var finalDate = initialDate.AddMonths(6);
@@ -36,7 +80,7 @@ namespace MyVet.Web.Data
                         var finalDate2 = initialDate.AddHours(10);
                         while (initialDate<finalDate2)
                         {
-                            _context.Agendas.Add(new Agenda
+                            _dataContext.Agendas.Add(new Agenda
                             {
                                 Date = initialDate.ToUniversalTime(),
                                 IsAvailable = true
@@ -50,25 +94,25 @@ namespace MyVet.Web.Data
                         initialDate = initialDate.AddDays(1);
                     }
                 }
-                await _context.SaveChangesAsync();
+                await _dataContext.SaveChangesAsync();
             }
         }
 
         private async Task CheckPetsAsync()
         {
-            var owner = _context.Owners.FirstOrDefault();
-            var petType = _context.PetTypes.FirstOrDefault();
-            if (!_context.Pets.Any())
+            var owner = _dataContext.Owners.FirstOrDefault();
+            var petType = _dataContext.PetTypes.FirstOrDefault();
+            if (!_dataContext.Pets.Any())
             {
                 AddPet("Zeus", owner, petType, "Pastor Aleman");
                 AddPet("Tayson", owner, petType, "Doberman");
-                await _context.SaveChangesAsync();
+                await _dataContext.SaveChangesAsync();
             }
         }
 
         private void AddPet(string name, Owner owner, PetType petType, string race)
         {
-            _context.Pets.Add(new Pet
+            _dataContext.Pets.Add(new Pet
             {
                 Born = DateTime.Now.AddYears(-2),
                 Name = name,
@@ -78,48 +122,41 @@ namespace MyVet.Web.Data
             });
         }
 
-        private async Task CheckOwnersAsync()
+        private async Task CheckOwnerAsync(User user)
         {
-            if (!_context.Owners.Any())
+            if (!_dataContext.Owners.Any())
             {
-                AddOwner("8989898", "Juan", "Ochoa", "234 5221", "311 743 70 28", "Calle 70b");
-                AddOwner("7655544", "Nereida", "Gaviria", "343 3226", "300 332 3281", "Carrera 66 #55 21");
-                await _context.SaveChangesAsync();
+                _dataContext.Owners.Add(new Owner { User = user });
+                await _dataContext.SaveChangesAsync();
             }
         }
-
-        private void AddOwner(string document, string firstName, string lastName, string fixedPhone, string cellPhone, string address)
+        private async Task CheckManagerAsync(User user)
         {
-            _context.Owners.Add(new Owner
+            if (!_dataContext.Managers.Any())
             {
-                Address = address,
-                CellPhone = cellPhone,
-                Document = document,
-                FirstName = firstName,
-                FixedPhone = fixedPhone,
-                LastName = lastName
-            });
+                _dataContext.Managers.Add(new Manager{ User = user });
+                await _dataContext.SaveChangesAsync();
+            }
         }
-
         private async Task CheckServiceTypesAsync()
         {
-            if (!_context.ServiceTypes.Any())
+            if (!_dataContext.ServiceTypes.Any())
             {
-                _context.ServiceTypes.Add(new ServiceType { Name = "Consult" });
-                _context.ServiceTypes.Add(new ServiceType { Name = "Urgency" });
-                _context.ServiceTypes.Add(new ServiceType { Name = "Vacunation" });
-                await _context.SaveChangesAsync();
+                _dataContext.ServiceTypes.Add(new ServiceType { Name = "Consult" });
+                _dataContext.ServiceTypes.Add(new ServiceType { Name = "Urgency" });
+                _dataContext.ServiceTypes.Add(new ServiceType { Name = "Vacunation" });
+                await _dataContext.SaveChangesAsync();
             }
         }
 
         private async Task CheckPetTypesAsync()
         {
-            if (!_context.PetTypes.Any())
+            if (!_dataContext.PetTypes.Any())
             {
-                _context.PetTypes.Add(new PetType {Name = "Dog"});
-                _context.PetTypes.Add(new PetType {Name = "Cat"});
-                _context.PetTypes.Add(new PetType {Name = "Bird"});
-                await _context.SaveChangesAsync();
+                _dataContext.PetTypes.Add(new PetType {Name = "Dog"});
+                _dataContext.PetTypes.Add(new PetType {Name = "Cat"});
+                _dataContext.PetTypes.Add(new PetType {Name = "Bird"});
+                await _dataContext.SaveChangesAsync();
             }
         }
     }

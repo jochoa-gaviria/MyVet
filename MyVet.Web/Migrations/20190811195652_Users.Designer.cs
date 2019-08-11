@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MyVet.Web.Data.Entities;
 
 namespace MyVet.Web.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20190811195652_Users")]
+    partial class Users
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -391,18 +393,18 @@ namespace MyVet.Web.Migrations
                         .HasForeignKey("OwnerId");
 
                     b.HasOne("MyVet.Web.Data.Entities.Pet", "Pet")
-                        .WithMany("Agendas")
+                        .WithMany()
                         .HasForeignKey("PetId");
                 });
 
             modelBuilder.Entity("MyVet.Web.Data.Entities.History", b =>
                 {
-                    b.HasOne("MyVet.Web.Data.Entities.Pet", "Pet")
+                    b.HasOne("MyVet.Web.Data.Entities.Pet")
                         .WithMany("Histories")
                         .HasForeignKey("PetId");
 
                     b.HasOne("MyVet.Web.Data.Entities.ServiceType", "ServiceType")
-                        .WithMany("Histories")
+                        .WithMany()
                         .HasForeignKey("ServiceTypeId");
                 });
 
@@ -427,7 +429,7 @@ namespace MyVet.Web.Migrations
                         .HasForeignKey("OwnerId");
 
                     b.HasOne("MyVet.Web.Data.Entities.PetType", "PetType")
-                        .WithMany("Pets")
+                        .WithMany()
                         .HasForeignKey("PetTypeId");
                 });
 #pragma warning restore 612, 618

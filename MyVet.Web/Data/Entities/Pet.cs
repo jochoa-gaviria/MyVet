@@ -24,6 +24,9 @@ namespace MyVet.Web.Data.Entities
         public Owner Owner { get; set; }
 
         public PetType PetType { get; set; }
+        public ICollection<History> Histories { get; set; }
+        public ICollection<Agenda> Agendas { get; set; }
+
 
         [Display(Name="Born Date")]
         [Required(ErrorMessage = "The field {0} is mandatory")]
@@ -33,11 +36,14 @@ namespace MyVet.Web.Data.Entities
 
         public string Remarks { get; set; }
 
-        public ICollection<History> Histories { get; set; }
-
         //TODO: replace the correct URL for the image
         public string ImageFullPath => string.IsNullOrEmpty(ImageUrl)
             ? null
             : $"https://TDB.azurewebsites.net{ImageUrl.Substring(1)}";
+
+        [Display(Name = "Born")]
+        [DisplayFormat(DataFormatString = "{0:yyyy/MM/dd}")]
+        public DateTime BornLocal => Born.ToLocalTime();
     }
+
 }

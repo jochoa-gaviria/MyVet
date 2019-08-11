@@ -25,5 +25,8 @@ namespace MyVet.Web.Data.Entities
         [Display(Name = "Is Available?")]
         public bool IsAvailable { get; set; }
 
+        [Display(Name = "Date")]
+        [DisplayFormat(DataFormatString = "{0:yyyy/MM/dd H:mm tt}")]
+        public DateTime DateLocal => Date.ToLocalTime();
     }
 }
