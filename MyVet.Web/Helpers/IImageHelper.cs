@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace MyVet.Web.Helpers
 {
-   public interface ICombosHelper
+    public interface IImageHelper
     {
-        IEnumerable<SelectListItem> GetComboPetTypes();
+        Task<string> UploadImageAsync(IFormFile imageFile);
     }
 }

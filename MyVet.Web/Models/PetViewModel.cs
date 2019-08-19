@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using MyVet.Web.Data.Entities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace MyVet.Web.Models
 {
-    public class PetViewModel
+    public class PetViewModel : Pet
     {
         public int OwnerId { get; set; }
 
