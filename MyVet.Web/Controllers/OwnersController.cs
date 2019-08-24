@@ -177,26 +177,67 @@ namespace MyVet.Web.Controllers
             }
 
             var owner = await _context.Owners
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .Include(o => o.User)
+                .Include(o => o.Pets)
+                .FirstOrDefaultAsync(o => o.Id == id.Value);
             if (owner == null)
             {
                 return NotFound();
             }
 
-            return View(owner);
-        }
-
-        // POST: Owners/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var owner = await _context.Owners.FindAsync(id);
+            if (owner.Pets.Count > 0)
+            {
+                ModelState.AddModelError(string.Empty, "The owner can't be deleted because it has related records.");
+                return RedirectToAction($"{nameof(Index)}");
+            }
             _context.Owners.Remove(owner);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            await _userHelper.DeleteUserAsync(owner.User.Email);
+            return RedirectToAction($"{nameof(Index)}");
         }
+        public async Task<IActionResult> DeletePet(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
 
+            var pet = await _context.Pets
+                .Include(p => p.Histories)
+                .Include(p => p.Owner)
+                .FirstOrDefaultAsync(o => o.Id == id.Value);
+            if (pet == null)
+            {
+                return NotFound();
+            }
+
+            if (pet.Histories.Count > 0)
+            {
+                ModelState.AddModelError(string.Empty, "The pet can't be deleted because it has related records.");
+                return RedirectToAction($"{nameof(Index)}");
+            }
+            _context.Pets.Remove(pet);
+            await _context.SaveChangesAsync();
+            return RedirectToAction($"{nameof(Details)}/{pet.Owner.Id}");
+        }
+        public async Task<IActionResult> DeleteHistory(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var history = await _context.Histiories
+                .Include(h => h.Pet)
+                .FirstOrDefaultAsync(o => o.Id == id.Value);
+            if (history == null)
+            {
+                return NotFound();
+            }
+            _context.Histiories.Remove(history);
+            await _context.SaveChangesAsync();
+            return RedirectToAction($"{nameof(DetailsPet)}/{history.Pet.Id}");
+        }
         private bool OwnerExists(int id)
         {
             return _context.Owners.Any(e => e.Id == id);
@@ -356,7 +397,5 @@ namespace MyVet.Web.Controllers
             model.ServiceTypes = _combosHelper.GetComboServiceTypes();
             return View(model);
         }
-
-
     }
 }
