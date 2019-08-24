@@ -22,7 +22,7 @@ namespace MyVet.Web.Helpers
             return new Pet
             {
                 Agendas = model.Agendas,
-                Born = model.BornLocal,
+                Born = model.Born.ToUniversalTime(),
                 Histories = model.Histories,
                 Id = isNew ? 0 : model.Id,
                 ImageUrl = path,
