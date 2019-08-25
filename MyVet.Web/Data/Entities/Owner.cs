@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MyVet.Web.Data.Entities
 {
-    public class Owner
+    public class Owner 
     {
         public int Id { get; set; }
         public User User { get; set; }

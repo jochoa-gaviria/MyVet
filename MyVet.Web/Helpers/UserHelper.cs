@@ -76,9 +76,9 @@ namespace MyVet.Web.Helpers
         }
 
         //TODO
-        public Task<IdentityResult> UpdateUserAsync(User user)
+        public async Task<IdentityResult> UpdateUserAsync(User user)
         {
-            throw new NotImplementedException();
+            return await _userManager.UpdateAsync(user);
         }
 
         //TODO

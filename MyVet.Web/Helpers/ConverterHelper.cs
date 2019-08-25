@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using MyVet.Web.Data.Entities;
 using MyVet.Web.Models;
 
@@ -15,6 +16,19 @@ namespace MyVet.Web.Helpers
         {
             _dataContext = dataContext;
             _combosHelper = combosHelper;
+        }
+
+        public EditUserViewModel ToEditUserViewModel(Owner owner)
+        {
+            return new EditUserViewModel
+            {
+                Address = owner.User.Address,
+                Document = owner.User.Document,
+                FirstName = owner.User.FirstName,
+                Id = owner.Id,
+                LastName = owner.User.LastName,
+                PhoneNumber = owner.User.PhoneNumber
+            };
         }
 
         public async Task<History> ToHistoryAsync(HistoryViewModel model, bool isNew)
@@ -42,6 +56,21 @@ namespace MyVet.Web.Helpers
                 ServiceTypeId = history.ServiceType.Id,
                 ServiceTypes = _combosHelper.GetComboServiceTypes()
             };
+        }
+
+        public async Task<Owner> ToOwnerAsync(EditUserViewModel model, bool isNew)
+        {
+            var owner = await _dataContext.Owners
+                               .Include(o => o.User)
+                               .FirstOrDefaultAsync(o => o.Id == model.Id);
+
+            owner.User.Document = model.Document;
+            owner.User.FirstName = model.FirstName;
+            owner.User.LastName = model.LastName;
+            owner.User.Address = model.Address;
+            owner.User.PhoneNumber = model.PhoneNumber;
+
+            return owner;
         }
 
         public async Task<Pet> ToPetAsync(PetViewModel model, string path, bool isNew)
