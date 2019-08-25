@@ -75,16 +75,16 @@ namespace MyVet.Web.Helpers
             await _signInManager.SignOutAsync();
         }
 
-        //TODO
+        
         public async Task<IdentityResult> UpdateUserAsync(User user)
         {
             return await _userManager.UpdateAsync(user);
         }
 
-        //TODO
-        public Task<SignInResult> ValidatePasswordAsync(User user, string Password)
+       
+        public async Task<SignInResult> ValidatePasswordAsync(User user, string password)
         {
-            throw new NotImplementedException();
+            return await _signInManager.CheckPasswordSignInAsync(user,password,false);
         }
     }
 }
