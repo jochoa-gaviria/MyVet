@@ -77,7 +77,7 @@ namespace MyVet.Prism.ViewModels
             {
                 IsRunning = false;
                 IsEnabled = true;
-                await App.Current.MainPage.DisplayAlert("Error", "Email or Password invalid", "Accept");
+                await App.Current.MainPage.DisplayAlert("Error", "Email or Password are invalid", "Accept");
                 Password = string.Empty;
                 return;
             }
@@ -87,13 +87,14 @@ namespace MyVet.Prism.ViewModels
             {
                 IsRunning = false;
                 IsEnabled = true;
-                await App.Current.MainPage.DisplayAlert("Error", "This user have a big problem, call support or your user rol can't login " +
-                    "in the APP", "Accept");
+                await App.Current.MainPage.DisplayAlert("Error", "This user have a big problem or your userrole can't login " +
+                    "in the APP, call support", "Accept");
                 return;
             }
             var owner = (OwnerResponse)response2.Result;
             var parameters = new NavigationParameters
             {
+                { "token", token },
                 {"owner", owner }
             };
             IsRunning = false;
