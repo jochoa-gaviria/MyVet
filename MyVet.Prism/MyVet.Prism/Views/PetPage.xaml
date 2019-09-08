@@ -5,6 +5,7 @@
              xmlns:ffimageloading="clr-namespace:FFImageLoading.Forms;assembly=FFImageLoading.Forms"
              prism:ViewModelLocator.AutowireViewModel="True"
              x:Class="MyVet.Prism.Views.PetPage"
+             IconImageSource="ic_pets"
              Title="{Binding Title}">
 
     <StackLayout
@@ -52,11 +53,11 @@
             <Label
                 Grid.Column="0"
                 Grid.Row="2"
+                FontAttributes="Bold"
                 Text="Born"/>
             <Label
                 Grid.Column="1"
                 Grid.Row="2"
-                FontAttributes="Bold"
                 Text="{Binding Pet.Born, StringFormat='{0:yyyy/MM/dd}'}"/>
             <Label
                 Grid.Column="0"
