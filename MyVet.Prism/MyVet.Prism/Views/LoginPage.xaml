@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:prism="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
+             xmlns:busyindicator="clr-namespace:Syncfusion.SfBusyIndicator.XForms;assembly=Syncfusion.SfBusyIndicator.XForms"
              prism:ViewModelLocator.AutowireViewModel="True"
              x:Class="MyVet.Prism.Views.LoginPage"
              Title="{Binding Title}">
@@ -25,9 +26,6 @@
                 IsPassword="True"
                 Placeholder="Enter your password..."
                 Text="{Binding Password}"/>
-                <ActivityIndicator
-                VerticalOptions="CenterAndExpand"
-                IsRunning="{Binding IsRunning}"/>
                 <Button
                 BorderRadius="23"
                 BackgroundColor="Navy"
@@ -35,8 +33,21 @@
                 Command="{Binding LoginCommand}"
                 HeightRequest="46"
                 Text="Login"
-                TextColor="White"/>
+                TextColor="White"
+                VerticalOptions="EndAndExpand"/>
             </StackLayout>
+            <busyindicator:SfBusyIndicator  
+                AnimationType="DoubleCircle"
+                AbsoluteLayout.LayoutBounds=".5,.5,.5,.5"
+                AbsoluteLayout.LayoutFlags="All"
+                BackgroundColor="Transparent"
+                HorizontalOptions="Center"
+                TextColor="Black"
+                IsVisible="{Binding IsRunning}"
+                Title="Wait a second please..."
+                VerticalOptions="Center"
+                ViewBoxWidth="80"
+                ViewBoxHeight="80" />
         </AbsoluteLayout>
     </ScrollView>
 </ContentPage>
