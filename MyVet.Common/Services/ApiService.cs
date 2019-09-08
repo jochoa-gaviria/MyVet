@@ -6,14 +6,19 @@ using System.Text;
 using System.Threading.Tasks;
 using MyVet.Common.Models;
 using Newtonsoft.Json;
+using Plugin.Connectivity;
 
 namespace MyVet.Common.Services
 {
     public class ApiService : IApiService
     {
-        public Task<bool> CheckConnection(string url)
+        public async Task<bool> CheckConnection(string url)
         {
-            throw new NotImplementedException();
+            if (!CrossConnectivity.Current.IsConnected)
+            {
+                return false;
+            }
+            return await CrossConnectivity.Current.IsRemoteReachable(url);
         }
 
         public async Task<Response<OwnerResponse>> GetOwnerByEmailAsync(string urlBase, string servicePrefix, string controller, string tokenType, string accessToken, string email)
